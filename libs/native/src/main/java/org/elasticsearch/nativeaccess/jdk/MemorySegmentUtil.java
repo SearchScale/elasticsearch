@@ -13,6 +13,7 @@ import java.lang.foreign.Arena;
 import java.lang.foreign.MemoryLayout;
 import java.lang.foreign.MemorySegment;
 import java.lang.invoke.VarHandle;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Utility methods to act on MemorySegment apis which have changed in subsequent JDK releases.
@@ -20,15 +21,15 @@ import java.lang.invoke.VarHandle;
 class MemorySegmentUtil {
 
     static String getString(MemorySegment segment, long offset) {
-        return segment.getUtf8String(offset);
+        return segment.getString(offset);
     }
 
     static void setString(MemorySegment segment, long offset, String value) {
-        segment.setUtf8String(offset, value);
+        segment.setString(offset, value);
     }
 
     static MemorySegment allocateString(Arena arena, String s) {
-        return arena.allocateUtf8String(s);
+        return arena.allocateFrom(s, StandardCharsets.UTF_8);
     }
 
     /**

@@ -27,6 +27,7 @@ import static org.elasticsearch.gradle.util.GradleUtils.maybeConfigure
 
 buildscript {
   repositories {
+    mavenLocal()
     mavenCentral()
   }
 }

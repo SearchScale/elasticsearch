@@ -40,7 +40,7 @@ class JdkMacCLibrary implements MacCLibrary {
 
         @Override
         public String toString() {
-            return deref().reinterpret(Long.MAX_VALUE).getUtf8String(0);
+            return deref().reinterpret(Long.MAX_VALUE).getString(0);
         }
     }
 

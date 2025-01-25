@@ -40,14 +40,14 @@ public class ClusterFeaturesMetadataPlugin implements Plugin<Project> {
         SourceSetContainer sourceSets = project.getExtensions().getByType(SourceSetContainer.class);
         SourceSet mainSourceSet = sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 
-        TaskProvider<ClusterFeaturesMetadataTask> generateTask = project.getTasks()
+        /*TaskProvider<ClusterFeaturesMetadataTask> generateTask = project.getTasks()
             .register("generateClusterFeaturesMetadata", ClusterFeaturesMetadataTask.class, task -> {
                 task.setClasspath(
                     featureMetadataExtractorConfig.plus(mainSourceSet.getRuntimeClasspath())
                         .plus(project.getConfigurations().getByName(CompileOnlyResolvePlugin.RESOLVEABLE_COMPILE_ONLY_CONFIGURATION_NAME))
                 );
                 task.getOutputFile().convention(project.getLayout().getBuildDirectory().file(CLUSTER_FEATURES_JSON));
-            });
+            });*/
 
         Configuration featuresMetadataArtifactConfig = project.getConfigurations().create(FEATURES_METADATA_CONFIGURATION, c -> {
             c.setCanBeResolved(false);
@@ -55,6 +55,6 @@ public class ClusterFeaturesMetadataPlugin implements Plugin<Project> {
             c.attributes(a -> { a.attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, FEATURES_METADATA_TYPE); });
         });
 
-        project.getArtifacts().add(featuresMetadataArtifactConfig.getName(), generateTask);
+        //project.getArtifacts().add(featuresMetadataArtifactConfig.getName(), generateTask);
     }
 }

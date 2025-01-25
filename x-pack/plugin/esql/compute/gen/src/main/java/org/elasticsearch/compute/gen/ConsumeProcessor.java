@@ -49,7 +49,7 @@ public class ConsumeProcessor implements Processor {
 
     @Override
     public SourceVersion getSupportedSourceVersion() {
-        return SourceVersion.RELEASE_21;
+        return SourceVersion.RELEASE_22;
     }
 
     @Override

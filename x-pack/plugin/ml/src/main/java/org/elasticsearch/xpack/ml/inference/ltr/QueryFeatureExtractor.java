@@ -55,7 +55,9 @@ public class QueryFeatureExtractor implements FeatureExtractor {
             }
             scorers.add(scorer);
         }
-        rankerIterator = new DisjunctionDISIApproximation(disiPriorityQueue);
+        List<DisiWrapper> weights = new ArrayList<DisiWrapper>();
+        for (DisiWrapper w: disiPriorityQueue) weights.add(w);
+        rankerIterator = new DisjunctionDISIApproximation(weights, 0L);
     }
 
     @Override

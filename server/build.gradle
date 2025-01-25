@@ -39,6 +39,9 @@ dependencies {
   implementation project(":libs:simdvec")
   implementation project(":libs:entitlement")
 
+  implementation "com.fasterxml.jackson.core:jackson-annotations:${versions.jackson}"
+  implementation "com.nvidia.cuvs:cuvs-java:25.02"
+  
   // lucene
   api "org.apache.lucene:lucene-core:${versions.lucene}"
   api "org.apache.lucene:lucene-analysis-common:${versions.lucene}"

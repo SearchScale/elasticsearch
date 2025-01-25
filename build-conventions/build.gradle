@@ -12,6 +12,7 @@ import org.gradle.plugins.ide.eclipse.model.SourceFolder
 
 buildscript {
   repositories {
+    mavenLocal()
     mavenCentral()
   }
 }
@@ -67,6 +68,7 @@ gradlePlugin {
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
     gradlePluginPortal()
 }

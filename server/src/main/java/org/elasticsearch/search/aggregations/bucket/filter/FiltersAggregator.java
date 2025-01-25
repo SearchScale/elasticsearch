@@ -452,7 +452,9 @@ public abstract class FiltersAggregator extends BucketsAggregator {
             if (usesCompetitiveIterator) {
                 // A DocIdSetIterator view of the filterIterators heap
                 assert filterIterators != null;
-                return new DisjunctionDISIApproximation(filterIterators);
+                List<DisiWrapper> filters = new ArrayList<DisiWrapper>();
+                for (DisiWrapper w: filterIterators) filters.add(w);
+                return new DisjunctionDISIApproximation(filters, 0L);
             }
             return null;
         }

@@ -258,6 +258,7 @@ tasks.named('licenseHeaders').configure {
  *****************************************************************************/
 
 repositories {
+  mavenLocal()
   mavenCentral()
   gradlePluginPortal()
 }

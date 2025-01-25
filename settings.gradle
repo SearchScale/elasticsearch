@@ -4,6 +4,7 @@ import org.elasticsearch.gradle.internal.toolchain.AdoptiumJdkToolchainResolver
 
 pluginManagement {
   repositories {
+    mavenLocal()
     mavenCentral()
     gradlePluginPortal()
   }
