@@ -1970,6 +1970,45 @@ public class DenseVectorFieldMapperTests extends MapperTestCase {
         assertEquals(expectedString, knnVectorsFormat.toString());
     }
 
+
+    public void testCuVSVectorsFormat() throws IOException {
+        final int writerThreads = randomIntBetween(1, Runtime.getRuntime().availableProcessors());
+        final int intGraphDegree = randomIntBetween(128, 128 * 10);
+        final int graphDegree = randomIntBetween(64, 64 * 10);
+        final int dims = randomIntBetween(64, 4096);
+        MapperService mapperService = createMapperService(fieldMapping(b -> {
+            b.field("type", "dense_vector");
+            b.field("dims", dims);
+            b.field("index", true);
+            b.field("similarity", "dot_product");
+            b.startObject("index_options");
+            b.field("type", "cuvs");
+            b.field("writer_threads", writerThreads);
+            b.field("int_graph_degree", intGraphDegree);
+            b.field("graph_degree", graphDegree);
+            b.endObject();
+        }));
+        CodecService codecService = new CodecService(mapperService, BigArrays.NON_RECYCLING_INSTANCE);
+        Codec codec = codecService.codec("default");
+        KnnVectorsFormat knnVectorsFormat;
+        if (CodecService.ZSTD_STORED_FIELDS_FEATURE_FLAG.isEnabled()) {
+            assertThat(codec, instanceOf(PerFieldMapperCodec.class));
+            knnVectorsFormat = ((PerFieldMapperCodec) codec).getKnnVectorsFormatForField("field");
+        } else {
+            if (codec instanceof CodecService.DeduplicateFieldInfosCodec deduplicateFieldInfosCodec) {
+                codec = deduplicateFieldInfosCodec.delegate();
+            }
+            assertThat(codec, instanceOf(LegacyPerFieldMapperCodec.class));
+            knnVectorsFormat = ((LegacyPerFieldMapperCodec) codec).getKnnVectorsFormatForField("field");
+        }
+        String expectedString = "CuVSVectorFormat(name=CuVSVectorFormat, writerThreads="
+            + writerThreads
+            + ", intGraphDegree="
+            + intGraphDegree
+            + ", graphDegree=" + graphDegree + ")";
+        assertEquals(expectedString, knnVectorsFormat.toString());
+    }
+
     public void testKnnBBQHNSWVectorsFormat() throws IOException {
         final int m = randomIntBetween(1, DEFAULT_MAX_CONN + 10);
         final int efConstruction = randomIntBetween(1, DEFAULT_BEAM_WIDTH + 10);

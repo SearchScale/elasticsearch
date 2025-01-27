@@ -33,12 +33,12 @@ public class RepositoriesSetupPlugin implements Plugin<Project> {
      */
     public static void configureRepositories(Project project) {
         RepositoryHandler repos = project.getRepositories();
-        //if (System.getProperty("repos.mavenLocal") != null) {
-            // with -Drepos.mavenLocal=true we can force checking the local .m2 repo which is
-            // useful for development ie. bwc tests where we install stuff in the local repository
-            // such that we don't have to pass hardcoded files to gradle
-            repos.mavenLocal();
-        //}
+        // if (System.getProperty("repos.mavenLocal") != null) {
+        // with -Drepos.mavenLocal=true we can force checking the local .m2 repo which is
+        // useful for development ie. bwc tests where we install stuff in the local repository
+        // such that we don't have to pass hardcoded files to gradle
+        repos.mavenLocal();
+        // }
         repos.mavenCentral();
 
         String luceneVersion = VersionProperties.getLucene();

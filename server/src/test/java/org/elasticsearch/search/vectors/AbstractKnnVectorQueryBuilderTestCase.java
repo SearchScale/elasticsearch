@@ -65,7 +65,7 @@ abstract class AbstractKnnVectorQueryBuilderTestCase extends AbstractQueryTestCa
         "int4_flat",
         "bbq_flat"
     );
-    protected static final Set<String> NON_QUANTIZED_INDEX_TYPES = Set.of("hnsw", "flat");
+    protected static final Set<String> NON_QUANTIZED_INDEX_TYPES = Set.of("hnsw", "flat", "cuvs");
     protected static final Set<String> ALL_INDEX_TYPES = Stream.concat(QUANTIZED_INDEX_TYPES.stream(), NON_QUANTIZED_INDEX_TYPES.stream())
         .collect(Collectors.toUnmodifiableSet());
     protected static String indexType;

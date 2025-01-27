@@ -9,14 +9,12 @@
 
 package org.elasticsearch.gradle.internal.test;
 
-import org.elasticsearch.gradle.dependencies.CompileOnlyResolvePlugin;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.type.ArtifactTypeDefinition;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
-import org.gradle.api.tasks.TaskProvider;
 
 import java.util.Map;
 
@@ -55,6 +53,6 @@ public class ClusterFeaturesMetadataPlugin implements Plugin<Project> {
             c.attributes(a -> { a.attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, FEATURES_METADATA_TYPE); });
         });
 
-        //project.getArtifacts().add(featuresMetadataArtifactConfig.getName(), generateTask);
+        // project.getArtifacts().add(featuresMetadataArtifactConfig.getName(), generateTask);
     }
 }

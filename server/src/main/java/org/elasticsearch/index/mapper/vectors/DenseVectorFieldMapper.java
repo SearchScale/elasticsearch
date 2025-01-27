@@ -40,6 +40,7 @@ import org.elasticsearch.common.ParsingException;
 import org.elasticsearch.common.xcontent.support.XContentMapValues;
 import org.elasticsearch.index.IndexVersion;
 import org.elasticsearch.index.IndexVersions;
+import org.elasticsearch.index.codec.vectors.CuVSVectorFormat;
 import org.elasticsearch.index.codec.vectors.ES813FlatVectorFormat;
 import org.elasticsearch.index.codec.vectors.ES813Int8FlatVectorFormat;
 import org.elasticsearch.index.codec.vectors.ES814HnswScalarQuantizedVectorsFormat;
@@ -1226,6 +1227,35 @@ public class DenseVectorFieldMapper extends FieldMapper {
     }
 
     private enum VectorIndexType {
+        CUVS("cuvs", false) {
+            @Override
+            public IndexOptions parseIndexOptions(String fieldName, Map<String, ?> indexOptionsMap) {
+                Object writerThreadsNode = indexOptionsMap.remove("writer_threads");
+                Object intGraphDegreeConstructionNode = indexOptionsMap.remove("int_graph_degree");
+                if (intGraphDegreeConstructionNode == null) {
+                    intGraphDegreeConstructionNode = 128;
+                }
+                Object graphDegreeConstructionNode = indexOptionsMap.remove("graph_degree");
+                if (graphDegreeConstructionNode == null) {
+                    graphDegreeConstructionNode = 64;
+                }
+                int writerThreads = XContentMapValues.nodeIntegerValue(writerThreadsNode);
+                int intGraphDegree = XContentMapValues.nodeIntegerValue(intGraphDegreeConstructionNode);
+                int graphDegree = XContentMapValues.nodeIntegerValue(graphDegreeConstructionNode);
+                MappingParser.checkNoRemainingFields(fieldName, indexOptionsMap);
+                return new CuVSIndexOptions(writerThreads, intGraphDegree, graphDegree);
+            }
+
+            @Override
+            public boolean supportsElementType(ElementType elementType) {
+                return elementType == ElementType.FLOAT;
+            }
+
+            @Override
+            public boolean supportsDimension(int dims) {
+                return true;
+            }
+        },
         HNSW("hnsw", false) {
             @Override
             public IndexOptions parseIndexOptions(String fieldName, Map<String, ?> indexOptionsMap) {
@@ -1731,6 +1761,61 @@ public class DenseVectorFieldMapper extends FieldMapper {
         }
     }
 
+    static class CuVSIndexOptions extends IndexOptions {
+        private final int writerThreads;
+        private final int intGraphDegree;
+        private final int graphDegree;
+
+        CuVSIndexOptions(int writerThreads, int intGraphDegree, int graphDegree) {
+            super(VectorIndexType.CUVS);
+            this.writerThreads = writerThreads;
+            this.intGraphDegree = intGraphDegree;
+            this.graphDegree = graphDegree;
+        }
+
+        @Override
+        public KnnVectorsFormat getVectorsFormat(ElementType elementType) {
+            if (elementType == ElementType.BIT) {
+                throw new UnsupportedOperationException("Bit vectors not supported with cuVS.");
+            }
+            return new CuVSVectorFormat(writerThreads, intGraphDegree, graphDegree);
+        }
+
+        @Override
+        boolean updatableTo(IndexOptions update) {
+            return false;
+        }
+
+        @Override
+        public XContentBuilder toXContent(XContentBuilder builder, Params params) throws IOException {
+            builder.startObject();
+            builder.field("type", type);
+            builder.field("writer_threads", writerThreads);
+            builder.field("int_graph_degree", intGraphDegree);
+            builder.field("graph_degree", graphDegree);
+            builder.endObject();
+            return builder;
+        }
+
+        @Override
+        public boolean doEquals(IndexOptions o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            CuVSIndexOptions that = (CuVSIndexOptions) o;
+            return writerThreads == that.writerThreads && intGraphDegree == that.intGraphDegree && graphDegree == that.graphDegree;
+        }
+
+        @Override
+        public int doHashCode() {
+            return Objects.hash(writerThreads, intGraphDegree, graphDegree);
+        }
+
+        @Override
+        public String toString() {
+            return "{type=" + type + ", writerThreads=" + writerThreads
+                + ", int_graph_degree=" + intGraphDegree + ", graphDegree=" + graphDegree + "}";
+        }
+    }
     static class HnswIndexOptions extends IndexOptions {
         private final int m;
         private final int efConstruction;
